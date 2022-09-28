@@ -27,22 +27,25 @@ class Hangman:
         else:
             return False
 
-    def display_stick_man(self, removed_limbs=0, left_padding=5):
+    def display_stick_man(self, removed_limbs=0, left_padding=4):
         """
         ph
         """
         stick_man = [
-            [" ", "O", " "],
-            ["/", "|", "\\"],
-            ["/", " ", "\\"],
+            ["|", "-", "-", "-", "-", "|", " ", " ", " ", " "],
+            ["|", " ", " ", " ", " ", "|", " ", " ", " ", " "],
+            ["|", " ", " ", " ", " ", "O", " ", " ", " ", " "],
+            ["|", " ", " ", " ", "/", "|", "\\", " ", " ", " "],
+            ["|", " ", " ", " ", "/", " ", "\\", " ", " ", " "],
+            ["|", "_", "_", "_", "_", "_", "_", "_", "_", "_"],
         ]
         remove_order = [
-            (2, 2),
-            (2, 0),
-            (1, 0),
-            (1, 2),
-            (1, 1),
-            (0, 1),
+            (4, 6),  # right leg
+            (4, 4),  # left leg
+            (3, 6),  # right arn
+            (3, 4),  # left arm
+            (3, 5),  # body
+            (2, 5),  # head
         ]
         for num in range(removed_limbs):
             x, y = remove_order[num]
@@ -80,6 +83,6 @@ class Hangman:
 
 if __name__ == "__main__":
     App = Hangman()
-    # App.play()
+    App.play()
     # App.print_hidden_word("Iron Man", ["t", "a", "e", "i"])
-    App.display_stick_man()
+    # App.display_stick_man(4)
