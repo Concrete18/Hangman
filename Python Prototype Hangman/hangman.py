@@ -7,20 +7,63 @@ class Hangman:
     """
 
     word_list = ["Wolverine", "Iron Man", "Dead Pool"]
-    previous_words = []
     current_word = ""
 
     def __init__(self) -> None:
+        """
+        ph
+        """
         pass
 
     def get_new_word(self):
         """
         ph
         """
-        new_word = random.choice(self.word_list)
-        while new_word in self.previous_words:
+        if self.word_list:
             new_word = random.choice(self.word_list)
-        self.current_word = new_word
+            self.word_list.pop(self.word_list.index(new_word))
+            self.current_word = new_word
+            return self.current_word
+        else:
+            return False
+
+    def display_stick_man(self, removed_limbs=0, left_padding=5):
+        """
+        ph
+        """
+        stick_man = [
+            [" ", "O", " "],
+            ["/", "|", "\\"],
+            ["/", " ", "\\"],
+        ]
+        remove_order = [
+            (2, 2),
+            (2, 0),
+            (1, 0),
+            (1, 2),
+            (1, 1),
+            (0, 1),
+        ]
+        for num in range(removed_limbs):
+            x, y = remove_order[num]
+            stick_man[x][y] = " "
+        for line in stick_man:
+            padding = " " * left_padding
+            print(f'{padding}{"".join(line)}')
+
+    def print_hidden_word(self, word, known_chars: list = []):
+        """
+        ph
+        """
+        final_string_list = []
+        known_chars.append(" ")
+        for char in word:
+            if char.lower() in known_chars:
+                final_string_list.append(char)
+            else:
+                final_string_list.append("_")
+        final_string = " ".join(final_string_list)
+        print(final_string)
 
     def play(self):
         """
@@ -28,10 +71,15 @@ class Hangman:
         """
         print("Welcome to the game of Hangman")
         # picks current word
-        self.get_new_word()
-        print(self.current_word)
+        if not self.get_new_word():
+            msg = "You win! There are no more words left."
+            print(msg)
+            return
+        self.print_hidden_word(self.current_word)
 
 
 if __name__ == "__main__":
     App = Hangman()
-    App.play()
+    # App.play()
+    # App.print_hidden_word("Iron Man", ["t", "a", "e", "i"])
+    App.display_stick_man()
