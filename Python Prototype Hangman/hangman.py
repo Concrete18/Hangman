@@ -21,18 +21,22 @@ def keyboard_interrupt(func):
 
 class Hangman:
     """
-    ph
+    Python Version of the game Hangman.
     """
+
+    # sets up directory for consistency
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
 
     def __init__(self) -> None:
         """
-        ph
+        Sets up the game object.
         """
-        pass
+        self.load_words_list()
 
     def get_new_word(self):
         """
-        ph
+        Gets a new word for playing
         """
         if self.words_list:
             new_word = random.choice(self.words_list)
@@ -44,14 +48,14 @@ class Hangman:
 
     def load_words_list(self):
         """
-        ph
+        Loads the words list from a json.
         """
         with open("words_list.json") as file:
             self.words_list = json.load(file)
 
     def display_stick_man(self, parts=0, left_padding=9):
         """
-        ph
+        Displays the stick man as you play.
         """
         stick_man = [
             ["|", "-", "-", "-", "-", "|", " ", " ", " ", " "],
@@ -79,7 +83,7 @@ class Hangman:
 
     def print_hidden_word(self, word, known_letters: list, left_padding=4):
         """
-        ph
+        Prints out the hidden word with only known letters shown.
         """
         final_string_list = []
         missing_count = 0
@@ -95,7 +99,7 @@ class Hangman:
 
     def play_again(self):
         """
-        ph
+        Asks if you want to play again.
         """
         response = input("\nDo you want to play again?\n")
         if response.lower() in ["y", "yes"]:
@@ -106,7 +110,7 @@ class Hangman:
 
     def guess(self):
         """
-        ph
+        Asks for a guess for the current word or letter.
         """
         self.error = None
         guess = input("\nType a letter or a full guess:\n")
@@ -117,7 +121,6 @@ class Hangman:
         # letter guess
         elif len(guess) == 1:
             guess = guess.lower()
-            # TODO fix issue with extra space before errors
             if guess in self.known_letters:
                 self.error = "\nYou already guessed that correctly."
                 return
@@ -138,10 +141,9 @@ class Hangman:
     @keyboard_interrupt
     def play(self):
         """
-        ph
+        Starts playing Hangman
         """
         # setup
-        self.load_words_list()
         self.current_word = None
         self.known_letters = [" "]
         self.incorrect_guess = []
@@ -171,7 +173,7 @@ class Hangman:
             # guess the word or letter
             self.guess()
         msg = "\nYou win!\nThere are no more words left."
-        print(msg)
+        input(msg)
         return
 
 
