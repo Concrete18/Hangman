@@ -130,6 +130,8 @@ class Hangman:
             elif guess in self.incorrect_guess:
                 self.error = "\nYou already guessed that incorrectly."
                 return
+            elif guess == '':
+                return
         self.incorrect_guess.append(guess)
         self.losses += 1
         print("\nIncorrect")
