@@ -1,13 +1,29 @@
-use std::thread::sleep;
-use std::time::Duration;
+fn print_hidden_word(word: &str, known_letters: Vec<char>) {
+    let mut final_string_list: Vec<char> = Vec::new();
+    let mut missing_count: u8 = 0;
+    for c in word.chars() {
+        // set c to lower case .to_lowercase()
+        if known_letters.contains(&c) {
+            final_string_list.push(c);
+        } else {
+            final_string_list.push('_');
+            missing_count = &missing_count + 1;
+        }
+        let final_string: String = final_string_list.into_iter().collect();
+        println!("{}", final_string);
+    }
+
+    // TODO invert value
+    return missing_count;
+}
 
 fn main() {
-    // Statements here are executed when the compiled binary is called
-
-    // Print text to the console
-    println!("Hello Worlds!");
-    let time = Duration::from_secs(1);
-
-    // sleep
-    sleep(time);
+    // let mut losses = 0;
+    // while losses < 6 {
+    //     println!("Welcome to the game of Hangman\n");
+    // }
+    let mut known_letters = Vec::new();
+    known_letters.push('t');
+    known_letters.push('e');
+    print_hidden_word("This is a test", known_letters)
 }
