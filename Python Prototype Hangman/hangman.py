@@ -105,7 +105,7 @@ class Hangman:
         if response.lower() in ["y", "yes"]:
             self.play()
         else:
-            print("Thanks for playing!")
+            print("\nThanks for playing!")
             exit()
 
     def guess(self):
@@ -121,17 +121,22 @@ class Hangman:
         # letter guess
         elif len(guess) == 1:
             guess = guess.lower()
+            # guessed letter was already chosen
             if guess in self.known_letters:
                 self.error = "\nYou already guessed that correctly."
                 return
+            # guessed letter is in the current word
             elif guess in self.current_word.lower():
                 self.known_letters.append(guess)
                 return
+            # guessed letter or word was already used incorrectly
             elif guess in self.incorrect_guess:
                 self.error = "\nYou already guessed that incorrectly."
                 return
-            elif guess == "":
-                return
+        # blank response causes a new prompt for a guess again
+        elif guess == "":
+            self.error = "\nPlease type in a valid guess."
+            return
         self.incorrect_guess.append(guess)
         self.losses += 1
         print("\nIncorrect")
@@ -161,10 +166,10 @@ class Hangman:
                 self.current_word,
                 self.known_letters,
             )
+            self.display_stick_man(self.losses)
             if win:
                 print("\nYou win!")
                 self.play_again()
-            self.display_stick_man(self.losses)
             # show incorrect guesses
             if self.incorrect_guess:
                 wrong_guesses = ", ".join(self.incorrect_guess)
