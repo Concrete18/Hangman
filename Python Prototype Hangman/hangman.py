@@ -140,8 +140,8 @@ class Hangman:
         self.incorrect_guess.append(guess)
         self.losses += 1
         print("\nIncorrect")
+        self.display_stick_man(self.losses)
         if self.losses == 6:
-            self.display_stick_man(6)
             print("\nYou lose!")
             self.play_again()
 
