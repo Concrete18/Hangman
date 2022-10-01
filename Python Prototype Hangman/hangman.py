@@ -66,7 +66,7 @@ class Hangman:
             ["|", "_", "_", "_", "_", "_", "_", "_", "_", "_"],
         ]
         add_order = [
-            (2, 5, "0"),  # head
+            (2, 5, "O"),  # head
             (3, 5, "|"),  # body
             (3, 4, "/"),  # left arm
             (3, 6, "\\"),  # right arn
@@ -125,13 +125,13 @@ class Hangman:
             if guess in self.known_letters:
                 self.error = "\nYou already guessed that correctly."
                 return
-            # guessed letter is in the current word
-            elif guess in self.current_word.lower():
-                self.known_letters.append(guess)
-                return
             # guessed letter or word was already used incorrectly
             elif guess in self.incorrect_guess:
                 self.error = "\nYou already guessed that incorrectly."
+                return
+            # guessed letter is in the current word
+            elif guess in self.current_word.lower():
+                self.known_letters.append(guess)
                 return
         # blank response causes a new prompt for a guess again
         elif guess == "":
@@ -158,8 +158,8 @@ class Hangman:
         self.losses = 0
 
         # picks current word
-        self.get_new_word()
-        while self.losses < 6:
+        words_left = self.get_new_word()
+        while self.losses < 6 and words_left:
             os.system("cls" if os.name == "nt" else "clear")
             print("Welcome to the game of Hangman\n")
             win = self.print_hidden_word(
