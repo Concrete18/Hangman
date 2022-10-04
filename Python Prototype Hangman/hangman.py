@@ -55,7 +55,7 @@ class Hangman:
 
     def display_stick_man(self, parts=0, left_padding=9):
         """
-        Displays the stick man as you play.
+        Displays stick man with n parts shown.
         """
         stick_man = [
             ["|", "-", "-", "-", "-", "|", " ", " ", " ", " "],
