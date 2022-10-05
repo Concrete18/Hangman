@@ -53,33 +53,26 @@ class Hangman:
         with open("words_list.json") as file:
             self.words_list = json.load(file)
 
-    def display_stick_man(self, parts=0, left_padding=9):
+    def display_stick_man(self, parts=0):
         """
         Displays stick man with n parts shown.
         """
-        stick_man = [
-            ["|", "-", "-", "-", "-", "|", " ", " ", " ", " "],
-            ["|", " ", " ", " ", " ", "|", " ", " ", " ", " "],
-            ["|", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-            ["|", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-            ["|", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-            ["|", "_", "_", "_", "_", "_", "_", "_", "_", "_"],
-        ]
-        add_order = [
-            (2, 5, "O"),  # head
-            (3, 5, "|"),  # body
-            (3, 4, "/"),  # left arm
-            (3, 6, "\\"),  # right arn
-            (4, 4, "/"),  # left leg
-            (4, 6, "\\"),  # right leg
-        ]
-        for num in range(parts):
-            x, y, part = add_order[num]
-            stick_man[x][y] = part
-        print()
-        for line in stick_man:
-            padding = " " * left_padding
-            print(f'{padding}{"".join(line)}')
+        reused_design = "\n    |-------|\n    |       |\n    |       "
+        if parts == 0:
+            d = f"{reused_design} \n    |      \n    |      \n    |________________"
+        elif parts == 1:
+            d = f"{reused_design}O\n    |      \n    |      \n    |________________"
+        elif parts == 2:
+            d = f"{reused_design}O\n    |       |  \n    |      \n    |________________"
+        elif parts == 3:
+            d = f"{reused_design}O\n    |      /| \n    |      \n    |________________"
+        elif parts == 4:
+            d = f"{reused_design}O\n    |      /|\\\n    |      \n    |________________"
+        elif parts == 5:
+            d = f"{reused_design}O\n    |      /|\\\n    |      /  \n    |________________"
+        else:
+            d = f"{reused_design}O\n    |      /|\\\n    |      / \\\n    |________________"
+        print(d)
 
     def print_hidden_word(self, word, known_letters: list, left_padding=4):
         """
