@@ -1,6 +1,5 @@
 use rand::Rng;
-// use std::fs;
-use std::io;
+use std::{fs, io};
 
 /// loads words list from text file
 fn load_words_list() -> Vec<String> {
@@ -24,20 +23,21 @@ fn load_words_list() -> Vec<String> {
 }
 
 /// asks for input after printing a msg
-fn get_input(msg: &str) -> String {
-    println!("{msg}");
+fn input() -> String {
     let mut response = String::new();
     io::stdin()
         .read_line(&mut response)
         .expect("Failed to read line");
-    return response;
+    return response.trim().to_string();
 }
 
-fn play_again() {
-    let mut response = get_input("\nDo you want to play again?\n");
+/// Asks if you want to play again
+fn play_again(words_list: Vec<String>) {
+    println!("\nDo you want to play again?");
+    let mut response = input();
     response = response.to_lowercase();
     if response == "yes" || response == "y" {
-        main()
+        play(words_list)
     } else {
         println!("Thanks for playing!");
     }
@@ -111,20 +111,27 @@ fn print_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (bool, 
 }
 
 fn play(mut words_list: Vec<String>) {
+    if words_list.len() < 1 {
+        println!("\nYou win!\nThere are no more words left.");
+        input();
+        return;
+    }
     let hidden_word = words_list.take_random_item();
     let mut known_letters: Vec<char> = vec![' '];
     let mut incorrect_guesses: Vec<String> = Vec::new();
     let mut losses: u8 = 0;
     let mut error = String::new();
     while losses < 6 {
-        // TODO clear terminal
-        termion::clear::All;
+        // TODO add proper terminal clear
+        print!("{esc}c", esc = 27 as char);
+        // new game rewrite of for each loop
         println!("Welcome to the game of Hangman\n");
+        println!("\n{hidden_word}"); // TODO remove when done testing
         let win = print_hidden_word(&hidden_word, &known_letters).0;
         display_stick_man(losses);
         if win {
             println!("\nYou Win!");
-            play_again();
+            play_again(words_list);
             return;
         }
         if incorrect_guesses.len() > 0 {
@@ -133,37 +140,39 @@ fn play(mut words_list: Vec<String>) {
         }
         // show errors if they exist
         println!("{error}");
-        // gets guess
-        let mut guess = get_input("\nType a letter or a full guess:\n");
+        // gets guess5
+        println!("Type a letter or a full guess:");
+        let mut guess = input();
         guess = guess.to_lowercase();
         // full guess
         if guess == hidden_word.to_lowercase() {
             println!("\nYou win!");
-            play_again();
+            play_again(words_list);
             return;
-        // letter guess
+            // letter guess
         } else if guess.len() == 1 {
-            // guessed letter was already chosen
             let guess_char = guess.chars().next().expect("string is empty");
+            // guessed letter was already chosen
             if known_letters.contains(&guess_char) {
                 error = "\nYou already guessed that correctly.".to_string();
             }
             // guessed letter or word was already used incorrectly
             else if incorrect_guesses.contains(&guess) {
                 error = "\nYou already guessed that incorrectly.".to_string();
-            } else if hidden_word.contains(&guess) {
-                // guessed letter is in the current word
+            // guessed letter is in the current word
+            } else if hidden_word.to_lowercase().contains(&guess) {
                 known_letters.push(guess_char);
+            // blank response causes a new prompt for a guess again
+            } else if guess == "" {
+                error = "\nPlease type in a valid guess.".to_string();
+            } else {
+                incorrect_guesses.push(guess.trim().to_string());
+                losses = losses + 1;
             }
-        // blank response causes a new prompt for a guess again
-        } else if guess == "" {
-            error = "\nPlease type in a valid guess.".to_string();
-        } else {
-            incorrect_guesses.push(guess);
-            losses = losses + 1;
         }
     }
-    get_input("\nYou win!\nThere are no more words left.");
+    println!("\nYou lose!");
+    play_again(words_list);
 }
 
 fn main() {
