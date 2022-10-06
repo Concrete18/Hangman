@@ -74,6 +74,88 @@ class Hangman:
             d = f"{reused_design}O\n    |      /|\\\n    |      / \\\n    |________________"
         print(d)
 
+    def display_stick_man_2(self, parts=0):
+        """
+        Displays stick man with n parts shown.
+        """
+        p0 = (
+            "\n   |-------|        "
+            "\n   |       |        "
+            "\n   |                "
+            "\n   |                "
+            "\n   |                "
+            "\n   |                "
+            "\n   |________________"
+        )
+        p1 = (
+            "\n   |-------|        "
+            "\n   |       |        "
+            "\n   |       O        "
+            "\n   |                "
+            "\n   |                "
+            "\n   |                "
+            "\n   |________________"
+        )
+        p2 = (
+            "\n   |-------|        "
+            "\n   |       |        "
+            "\n   |       O        "
+            "\n   |       |        "
+            "\n   |                "
+            "\n   |                "
+            "\n   |________________"
+        )
+        p3 = (
+            "\n   |-------|        "
+            "\n   |       |        "
+            "\n   |       O        "
+            "\n   |      /|        "
+            "\n   |                "
+            "\n   |                "
+            "\n   |________________"
+        )
+        p4 = (
+            "\n   |-------|        "
+            "\n   |       |        "
+            "\n   |       O        "
+            "\n   |      /|\       "
+            "\n   |                "
+            "\n   |                "
+            "\n   |________________"
+        )
+        p5 = (
+            "\n   |-------|        "
+            "\n   |       |        "
+            "\n   |       O        "
+            "\n   |      /|\       "
+            "\n   |      /         "
+            "\n   |                "
+            "\n   |________________"
+        )
+        p6 = (
+            "\n   |-------|        "
+            "\n   |       |        "
+            "\n   |       O        "
+            "\n   |      /|\       "
+            "\n   |      / \       "
+            "\n   |                "
+            "\n   |________________"
+        )
+        if parts == 0:
+            print(p0)
+        elif parts == 1:
+            print(p1)
+        elif parts == 2:
+            print(p2)
+        elif parts == 3:
+            print(p3)
+        elif parts == 4:
+            print(p4)
+        elif parts == 5:
+            print(p5)
+        else:
+            print(p6)
+
     def print_hidden_word(self, word, known_letters: list, left_padding=4):
         """
         Prints out the hidden word with only known letters shown.
@@ -133,7 +215,7 @@ class Hangman:
         self.incorrect_guess.append(guess)
         self.losses += 1
         print("\nIncorrect")
-        self.display_stick_man(self.losses)
+        self.display_stick_man_2(self.losses)
         if self.losses == 6:
             print("\nYou lose!")
             self.play_again()
@@ -159,7 +241,7 @@ class Hangman:
                 self.current_word,
                 self.known_letters,
             )
-            self.display_stick_man(self.losses)
+            self.display_stick_man_2(self.losses)
             if win:
                 print("\nYou win!")
                 self.play_again()
