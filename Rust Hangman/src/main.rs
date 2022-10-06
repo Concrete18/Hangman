@@ -1,3 +1,4 @@
+use clearscreen::ClearScreen;
 use rand::Rng;
 use std::{fs, io};
 
@@ -122,11 +123,12 @@ fn play(mut words_list: Vec<String>) {
     let mut losses: u8 = 0;
     let mut error = String::new();
     while losses < 6 {
-        // TODO add proper terminal clear
-        print!("{esc}c", esc = 27 as char);
+        // clears terminal before each rewrite
+        ClearScreen::default()
+            .clear()
+            .expect("failed to clear the screen");
         // new game rewrite of for each loop
         println!("Welcome to the game of Hangman\n");
-        println!("\n{hidden_word}"); // TODO remove when done testing
         let win = print_hidden_word(&hidden_word, &known_letters).0;
         display_stick_man(losses);
         if win {
@@ -168,6 +170,7 @@ fn play(mut words_list: Vec<String>) {
             } else {
                 incorrect_guesses.push(guess.trim().to_string());
                 losses = losses + 1;
+                display_stick_man(losses);
             }
         }
     }
@@ -182,7 +185,7 @@ fn main() {
 }
 
 #[cfg(test)]
-mod tests {
+mod hangman_tests {
     use super::*;
 
     #[test]
