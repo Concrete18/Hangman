@@ -74,7 +74,7 @@ fn censor_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (Strin
     let mut censored_string_vec: Vec<char> = Vec::new();
     let mut missing_count: u8 = 0;
     for c in hidden_word.chars() {
-        if known_letters.contains(&c.to_ascii_lowercase()) {
+        if known_letters.contains(&c.to_ascii_lowercase()) || &c == &' ' {
             censored_string_vec.push(c);
         } else {
             censored_string_vec.push('_');
@@ -92,7 +92,7 @@ fn play(mut words_list: Vec<String>) {
         return;
     }
     let hidden_word = words_list.take_random_item();
-    let mut known_letters: Vec<char> = vec![' '];
+    let mut known_letters: Vec<char> = Vec::new();
     let mut incorrect_guesses: Vec<String> = Vec::new();
     let mut losses: u8 = 0;
     let mut error = String::new();
@@ -187,7 +187,7 @@ mod hangman_tests {
     fn take_random_item_works() {
         let perm_words_list: [String; 2] = ["Rust".to_string(), "Linux".to_string()];
         let mut words_list = vec!["Rust".to_string(), "Linux".to_string()];
-        for _ in 0..1 {
+        for _ in 0..2 {
             let word = words_list.take_random_item();
             let result = perm_words_list.contains(&word);
             assert_eq!(result, true);
@@ -206,9 +206,9 @@ mod hangman_tests {
     #[test]
     fn hidden_word_printing_no_win() {
         let known_letters: Vec<char> = vec!['t', 'e'];
-        let (string, win) = censor_hidden_word(&"Test".to_string(), &known_letters);
+        let (string, win) = censor_hidden_word(&"Test this".to_string(), &known_letters);
         // tests string
-        assert_eq!(string, "T e _ t".to_string());
+        assert_eq!(string, "T e _ t   t _ _ _".to_string());
         // tests win
         assert_eq!(win, false);
     }
