@@ -75,7 +75,7 @@ fn censor_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (Strin
     let mut censored_string_vec: Vec<char> = Vec::new();
     let mut missing_count: u8 = 0;
     for c in hidden_word.chars() {
-        if known_letters.contains(&c.to_ascii_lowercase()) || &c == &' ' {
+        if known_letters.contains(&c.to_ascii_lowercase()) || c == ' ' {
             censored_string_vec.push(c);
         } else {
             censored_string_vec.push('_');
@@ -87,7 +87,7 @@ fn censor_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (Strin
 }
 
 fn play(mut words_list: Vec<String>) {
-    if words_list.len() < 1 {
+    if words_list.len() == 0 {
         println!("\nYou win!\nThere are no more words left.");
         input();
         return;
@@ -113,7 +113,7 @@ fn play(mut words_list: Vec<String>) {
         if win {
             println!("\nYou Win!");
             play_again(words_list);
-            process::exit(1);
+            return;
         }
         // shows all incorrect guesses if any exist
         if incorrect_guesses.len() > 0 {
@@ -144,13 +144,14 @@ fn play(mut words_list: Vec<String>) {
                 }
                 // guessed letter or word was already used incorrectly
                 else if incorrect_guesses.contains(&guess) {
-                    error = "\nYou already guessed that incorrectly.".to_string();
+                    error = format!("\nYou already guessed '{guess}' incorrectly.").to_string();
                     // guessed letter is in the current word
                 } else if hidden_word.to_lowercase().contains(&guess) {
                     known_letters.push(guess_char);
                 // blank response causes a new prompt for a guess again
                 } else if guess == "" {
                     error = "\nPlease type in a valid guess.".to_string();
+                // TODO write comment
                 } else {
                     incorrect_guesses.push(guess.trim().to_string());
                     losses = losses + 1;
@@ -162,7 +163,7 @@ fn play(mut words_list: Vec<String>) {
                 return;
             // TODO fix duplicate
             } else if incorrect_guesses.contains(&guess) {
-                error = "\nYou already guessed that incorrectly.".to_string();
+                error = format!("\nYou already guessed '{guess}' incorrectly.").to_string();
             } else {
                 incorrect_guesses.push(guess.trim().to_string());
                 losses = losses + 1;
