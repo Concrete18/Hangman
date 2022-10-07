@@ -102,8 +102,6 @@ fn play(mut words_list: Vec<String>) {
         ClearScreen::default().clear().expect("Clear Failed");
         // new game rewrite of for each loop
         println!("Welcome to the game of Hangman\n");
-        // reset error
-        error = "".to_string();
         // censores hidden word
         let (censored_word, win) = censor_hidden_word(&hidden_word, &known_letters);
         // TODO figure out how to center below
@@ -125,19 +123,19 @@ fn play(mut words_list: Vec<String>) {
         // checks for loss
         if losses >= 6 {
             println!("\nYou lose!\nIt was {hidden_word}");
-
             play_again(words_list);
-            process::exit(1);
+            return;
         } else {
             // show errors if they exist
             if error.len() > 0 {
                 println!("{error}");
             }
+            // reset error
+            error = "".to_string();
             // gets guess
             println!("\nType a letter or a full guess:");
-            let mut guess = input();
-            guess = guess.to_lowercase();
-            // full guess
+            let mut guess = input().to_lowercase();
+            // letter guess
             if guess.len() == 1 {
                 let guess_char = guess.chars().next().expect("string is empty");
                 // guessed letter was already chosen
@@ -150,26 +148,27 @@ fn play(mut words_list: Vec<String>) {
                     // guessed letter is in the current word
                 } else if hidden_word.to_lowercase().contains(&guess) {
                     known_letters.push(guess_char);
-                    // blank response causes a new prompt for a guess again
+                // blank response causes a new prompt for a guess again
                 } else if guess == "" {
                     error = "\nPlease type in a valid guess.".to_string();
                 } else {
                     incorrect_guesses.push(guess.trim().to_string());
                     losses = losses + 1;
                 }
+            // full guess
             } else if guess == hidden_word.to_lowercase() {
                 println!("\nYou win!");
                 play_again(words_list);
-                process::exit(1);
-                // letter guess
+                return;
+            // TODO fix duplicate
+            } else if incorrect_guesses.contains(&guess) {
+                error = "\nYou already guessed that incorrectly.".to_string();
             } else {
                 incorrect_guesses.push(guess.trim().to_string());
                 losses = losses + 1;
             }
         }
     }
-    println!("\nYou lose!");
-    play_again(words_list);
 }
 
 fn main() {
