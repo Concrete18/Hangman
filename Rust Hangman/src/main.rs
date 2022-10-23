@@ -60,13 +60,13 @@ fn join_vector(vec: Vec<char>, sep: String) -> String {
 /// Displays stick man with n parts shown
 fn get_stickman(parts: u8) -> String {
     match parts {
-        0 => return "\n    |-------|\n    |       |\n    |        \n    |      \n    |      \n    |        \n    |________________".to_string(),
-        1 => return "\n    |-------|\n    |       |\n    |       O\n    |      \n    |      \n    |        \n    |________________".to_string(),
-        2 => return "\n    |-------|\n    |       |\n    |       O\n    |       |  \n    |      \n    |        \n    |________________".to_string(),
-        3 => return "\n    |-------|\n    |       |\n    |       O\n    |      /| \n    |      \n    |        \n    |________________".to_string(),
-        4 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      \n    |        \n    |________________".to_string(),
-        5 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      /  \n    |        \n    |________________".to_string(),
-        _ => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      / \\\n    |        \n    |________________".to_string(),
+        0 => return "\n    |-------|\n    |       |\n    |\n    |\n    |\n    |\n    |________________".to_string(),
+        1 => return "\n    |-------|\n    |       |\n    |       O\n    |\n    |\n    |\n    |________________".to_string(),
+        2 => return "\n    |-------|\n    |       |\n    |       O\n    |       |\n    |\n    |\n    |________________".to_string(),
+        3 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\n    |\n    |\n    |________________".to_string(),
+        4 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |\n    |\n    |________________".to_string(),
+        5 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      /\n    |\n    |________________".to_string(),
+        _ => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      / \\\n    |\n    |________________".to_string(),
     }
 }
 
@@ -134,7 +134,7 @@ fn play(mut words_list: Vec<String>) {
             error = "".to_string();
             // gets guess
             println!("\nType a letter or a full guess:");
-            let mut guess = input().to_lowercase();
+            let guess = input().to_lowercase();
             // letter guess
             if guess.len() == 1 {
                 let guess_char = guess.chars().next().expect("string is empty");
