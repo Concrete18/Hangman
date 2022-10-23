@@ -53,27 +53,6 @@ class Hangman:
         with open("words_list.json") as file:
             self.words_list = json.load(file)
 
-    def display_stick_man(self, parts=0):
-        """
-        Displays stick man with n parts shown.
-        """
-        reused_design = "\n    |-------|\n    |       |\n    |       "
-        if parts == 0:
-            d = f"{reused_design} \n    |      \n    |      \n    |________________"
-        elif parts == 1:
-            d = f"{reused_design}O\n    |      \n    |      \n    |________________"
-        elif parts == 2:
-            d = f"{reused_design}O\n    |       |  \n    |      \n    |________________"
-        elif parts == 3:
-            d = f"{reused_design}O\n    |      /| \n    |      \n    |________________"
-        elif parts == 4:
-            d = f"{reused_design}O\n    |      /|\\\n    |      \n    |________________"
-        elif parts == 5:
-            d = f"{reused_design}O\n    |      /|\\\n    |      /  \n    |________________"
-        else:
-            d = f"{reused_design}O\n    |      /|\\\n    |      / \\\n    |________________"
-        print(d)
-
     def display_stick_man_2(self, parts=0):
         """
         Displays stick man with n parts shown.
