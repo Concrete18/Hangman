@@ -1,15 +1,13 @@
 #![allow(warnings, unused)]
 use clearscreen::ClearScreen;
 use rand::Rng;
-// TODO shrink use statements
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::BufRead;
 use std::{fs, io, process};
 
 /// loads words list from text file
 fn read_lines(path: &str) -> Result<Vec<String>, std::io::Error> {
-    let file = File::open(path)?;
-    let reader = BufReader::new(file);
+    let file = fs::File::open(path)?;
+    let reader = io::BufReader::new(file);
     let lines: Vec<String> = reader.lines().collect::<Result<_, _>>()?;
     Ok(lines)
 }
