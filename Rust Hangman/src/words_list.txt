@@ -1,9 +1,0 @@
-Programming
-Rust
-Virtual Reality
-Algorithm
-Arrays
-Binary
-Computer
-Terminal
-Linux
