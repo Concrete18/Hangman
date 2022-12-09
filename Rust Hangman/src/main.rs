@@ -3,11 +3,12 @@ use clearscreen::ClearScreen;
 use rand::Rng;
 use std::{fs, io, path};
 
-fn load_words() -> Vec<String> {
-    const FILE_PATH: &str = "words_list.txt";
+/// returns a word list from a file named words_list.txt in the same directory
+/// or from a hardcoded backup list
+fn load_words(FILE_PATH: &str) -> Vec<String> {
     let words_list: Vec<String>;
     if path::Path::new(FILE_PATH).exists() {
-        let msg = "Should have been able to read this file";
+        let msg: &str = "Should have been able to read this file";
         words_list = fs::read_to_string(FILE_PATH)
             .expect(msg)
             .lines()
@@ -25,14 +26,12 @@ fn load_words() -> Vec<String> {
             "Variable".to_string(),
         ]
     }
-    let words_list_len = words_list.len();
-    println!("{words_list_len}");
     words_list
 }
 
 /// asks for input after printing a msg
 fn input() -> String {
-    let mut response = String::new();
+    let mut response: String = String::new();
     io::stdin()
         .read_line(&mut response)
         .expect("Failed to read line");
@@ -42,7 +41,7 @@ fn input() -> String {
 /// Asks if you want to play again
 fn play_again(words_list: Vec<String>) {
     println!("\nDo you want to play again?");
-    let mut response = input();
+    let mut response: String = input();
     response = response.to_lowercase();
     if response == "yes" || response == "y" {
         play(words_list)
@@ -59,7 +58,7 @@ impl<T> RandomChoice<T> for Vec<T> {
     fn random_choice(self: &mut Self) -> T {
         if self.is_empty() {}
         let mut rng = rand::thread_rng();
-        let i = rng.gen_range(0..self.len());
+        let i: usize = rng.gen_range(0..self.len());
         self.swap_remove(i)
     }
 }
@@ -68,21 +67,21 @@ impl<T> RandomChoice<T> for Vec<T> {
 fn join_vector(vec: Vec<char>, sep: String) -> String {
     return vec
         .iter()
-        .map(|e| e.to_string())
+        .map(|e: &char| e.to_string())
         .collect::<Vec<String>>()
         .join(&sep);
 }
 
 /// Displays stick man with n parts shown
-fn get_stickman(parts: u8) -> String {
+fn get_stickman(parts: u8) -> &'static str {
     match parts {
-        0 => return "\n    |-------|\n    |       |\n    |\n    |\n    |\n    |\n    |________________".to_string(),
-        1 => return "\n    |-------|\n    |       |\n    |       O\n    |\n    |\n    |\n    |________________".to_string(),
-        2 => return "\n    |-------|\n    |       |\n    |       O\n    |       |\n    |\n    |\n    |________________".to_string(),
-        3 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\n    |\n    |\n    |________________".to_string(),
-        4 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |\n    |\n    |________________".to_string(),
-        5 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      /\n    |\n    |________________".to_string(),
-        _ => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      / \\\n    |\n    |________________".to_string(),
+        0 => return "\n    |-------|\n    |       |\n    |\n    |\n    |\n    |\n    |________________",
+        1 => return "\n    |-------|\n    |       |\n    |       O\n    |\n    |\n    |\n    |________________",
+        2 => return "\n    |-------|\n    |       |\n    |       O\n    |       |\n    |\n    |\n    |________________",
+        3 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\n    |\n    |\n    |________________",
+        4 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |\n    |\n    |________________",
+        5 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      /\n    |\n    |________________",
+        _ => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      / \\\n    |\n    |________________",
     }
 }
 
@@ -102,17 +101,20 @@ fn censor_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (Strin
     (censored_word, missing_count == 0)
 }
 
+/// TODO ph
 fn play(mut words_list: Vec<String>) {
+    // checks if any words are left
     if words_list.len() == 0 {
         println!("\nYou win!\nThere are no more words left.");
         input();
         return;
     }
-    let hidden_word = words_list.random_choice();
+    // runs main play code
+    let hidden_word: String = words_list.random_choice();
     let mut known_letters: Vec<char> = Vec::new();
     let mut incorrect_guesses: Vec<String> = Vec::new();
     let mut losses: u8 = 0;
-    let mut error = String::new();
+    let mut error: String = String::new();
     loop {
         // clears terminal before each rewrite
         ClearScreen::default().clear().expect("Clear Failed");
@@ -133,7 +135,7 @@ fn play(mut words_list: Vec<String>) {
         }
         // shows all incorrect guesses if any exist
         if incorrect_guesses.len() > 0 {
-            let wrong_guesses = incorrect_guesses.join(", ");
+            let wrong_guesses: String = incorrect_guesses.join(", ");
             println!("\nIncorrect Guesses: {wrong_guesses}");
         }
         // checks for loss
@@ -150,10 +152,10 @@ fn play(mut words_list: Vec<String>) {
             error = "".to_string();
             // gets guess
             println!("\nType a letter or a full guess:");
-            let guess = input().to_lowercase();
+            let guess: String = input().to_lowercase();
             // letter guess
             if guess.len() == 1 {
-                let guess_char = guess.chars().next().expect("string is empty");
+                let guess_char: char = guess.chars().next().expect("string is empty");
                 // guessed letter was already chosen
                 if known_letters.contains(&guess_char) {
                     error = "\nYou already guessed that correctly.".to_string();
@@ -189,13 +191,28 @@ fn play(mut words_list: Vec<String>) {
 }
 
 fn main() {
-    let words_list = load_words();
+    const FILE_PATH: &str = "words_list.txt";
+    let words_list: Vec<String> = load_words(FILE_PATH);
     play(words_list);
 }
 
 #[cfg(test)]
 mod hangman_tests {
     use super::*;
+
+    #[test]
+    fn load_words_from_file() {
+        const FILE_PATH: &str = "words_list.txt";
+        let words_list = load_words(FILE_PATH);
+        assert!(words_list.len() > 10);
+    }
+
+    #[test]
+    fn load_words_from_backup() {
+        const FILE_PATH: &str = "wrong_list.txt";
+        let words_list = load_words(FILE_PATH);
+        assert!(words_list.len() <= 10);
+    }
 
     #[test]
     fn random_choice_works() {
