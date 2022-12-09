@@ -1,15 +1,33 @@
 #![allow(warnings, unused)]
 use clearscreen::ClearScreen;
 use rand::Rng;
-use std::io::BufRead;
-use std::{fs, io, process};
+use std::{fs, io, path};
 
-/// loads words list from text file
-fn read_lines(path: &str) -> Result<Vec<String>, std::io::Error> {
-    let file = fs::File::open(path)?;
-    let reader = io::BufReader::new(file);
-    let lines: Vec<String> = reader.lines().collect::<Result<_, _>>()?;
-    Ok(lines)
+fn load_words() -> Vec<String> {
+    const FILE_PATH: &str = "words_list.txt";
+    let words_list: Vec<String>;
+    if path::Path::new(FILE_PATH).exists() {
+        let msg = "Should have been able to read this file";
+        words_list = fs::read_to_string(FILE_PATH)
+            .expect(msg)
+            .lines()
+            .map(|s: &str| s.to_string())
+            .collect();
+    } else {
+        words_list = vec![
+            "Array".to_string(),
+            "Binary".to_string(),
+            "Computer".to_string(),
+            "Function".to_string(),
+            "Linux".to_string(),
+            "Programming".to_string(),
+            "Rust".to_string(),
+            "Variable".to_string(),
+        ]
+    }
+    let words_list_len = words_list.len();
+    println!("{words_list_len}");
+    words_list
 }
 
 /// asks for input after printing a msg
@@ -33,12 +51,13 @@ fn play_again(words_list: Vec<String>) {
     }
 }
 
-trait TakeRandom<T> {
-    fn take_random_item(self: &mut Self) -> T;
+trait RandomChoice<T> {
+    fn random_choice(self: &mut Self) -> T;
 }
 
-impl<T> TakeRandom<T> for Vec<T> {
-    fn take_random_item(self: &mut Self) -> T {
+impl<T> RandomChoice<T> for Vec<T> {
+    fn random_choice(self: &mut Self) -> T {
+        if self.is_empty() {}
         let mut rng = rand::thread_rng();
         let i = rng.gen_range(0..self.len());
         self.swap_remove(i)
@@ -47,7 +66,6 @@ impl<T> TakeRandom<T> for Vec<T> {
 
 /// Joins a vector of characters with `sep`.
 fn join_vector(vec: Vec<char>, sep: String) -> String {
-    // TODO make this a trait like TakeRandom
     return vec
         .iter()
         .map(|e| e.to_string())
@@ -77,7 +95,7 @@ fn censor_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (Strin
             censored_string_vec.push(c);
         } else {
             censored_string_vec.push('_');
-            missing_count = missing_count + 1;
+            missing_count += 1;
         }
     }
     let censored_word: String = join_vector(censored_string_vec, " ".to_string());
@@ -90,7 +108,7 @@ fn play(mut words_list: Vec<String>) {
         input();
         return;
     }
-    let hidden_word = words_list.take_random_item();
+    let hidden_word = words_list.random_choice();
     let mut known_letters: Vec<char> = Vec::new();
     let mut incorrect_guesses: Vec<String> = Vec::new();
     let mut losses: u8 = 0;
@@ -152,7 +170,7 @@ fn play(mut words_list: Vec<String>) {
                 // TODO write comment
                 } else {
                     incorrect_guesses.push(guess.trim().to_string());
-                    losses = losses + 1;
+                    losses += 1;
                 }
             // full guess
             } else if guess == hidden_word.to_lowercase() {
@@ -164,29 +182,15 @@ fn play(mut words_list: Vec<String>) {
                 error = format!("\nYou already guessed '{guess}' incorrectly.").to_string();
             } else {
                 incorrect_guesses.push(guess.trim().to_string());
-                losses = losses + 1;
+                losses += 1;
             }
         }
     }
 }
 
 fn main() {
-    // let file_path = "words_list.txt";
-    // let words_list = load_words_list(file_path)?;
-
-    let words_list = vec![
-        "Rust".to_string(),
-        "Linux".to_string(),
-        "Programming".to_string(),
-        "Virtual Reality".to_string(),
-        "Algorithm".to_string(),
-        "Arrays".to_string(),
-        "Binary".to_string(),
-        "Computer".to_string(),
-        "Terminal".to_string(),
-    ];
-
-    play(words_list)
+    let words_list = load_words();
+    play(words_list);
 }
 
 #[cfg(test)]
@@ -194,21 +198,21 @@ mod hangman_tests {
     use super::*;
 
     #[test]
-    fn take_random_item_works() {
+    fn random_choice_works() {
         let perm_words_list: [String; 2] = ["Rust".to_string(), "Linux".to_string()];
         let mut words_list = vec!["Rust".to_string(), "Linux".to_string()];
         for _ in 0..2 {
-            let word = words_list.take_random_item();
+            let word = words_list.random_choice();
             let result = perm_words_list.contains(&word);
             assert_eq!(result, true);
         }
     }
 
     #[test]
-    fn take_random_item_empties_vector() {
+    fn random_choice_empties_vector() {
         let mut words_list = vec!["Rust".to_string(), "Linux".to_string()];
         for _ in 0..2 {
-            words_list.take_random_item();
+            words_list.random_choice();
         }
         assert_eq!(words_list.len(), 0);
     }
