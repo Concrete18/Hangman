@@ -1,21 +1,21 @@
-#![allow(warnings, unused)]
 use clearscreen::ClearScreen;
 use rand::Rng;
 use std::{fs, io, path};
 
 /// returns a word list from a file named words_list.txt in the same directory
 /// or from a hardcoded backup list
-fn load_words(FILE_PATH: &str) -> Vec<String> {
-    let words_list: Vec<String>;
-    if path::Path::new(FILE_PATH).exists() {
+fn load_words(file_path: &str) -> Vec<String> {
+    // checks if file exists then loads words from it
+    let words_list: Vec<String> = if path::Path::new(file_path).exists() {
         let msg: &str = "Should have been able to read this file";
-        words_list = fs::read_to_string(FILE_PATH)
+        fs::read_to_string(file_path)
             .expect(msg)
             .lines()
             .map(|s: &str| s.trim().to_string())
-            .collect();
+            .collect()
     } else {
-        words_list = vec![
+        // backup vector in case text file is not found
+        vec![
             "Array".to_string(),
             "Binary".to_string(),
             "Computer".to_string(),
@@ -25,7 +25,7 @@ fn load_words(FILE_PATH: &str) -> Vec<String> {
             "Rust".to_string(),
             "Variable".to_string(),
         ]
-    }
+    };
     words_list
 }
 
@@ -51,11 +51,11 @@ fn play_again(words_list: Vec<String>) {
 }
 
 trait RandomChoice<T> {
-    fn random_choice(self: &mut Self) -> T;
+    fn random_choice(&mut self) -> T;
 }
 
 impl<T> RandomChoice<T> for Vec<T> {
-    fn random_choice(self: &mut Self) -> T {
+    fn random_choice(&mut self) -> T {
         if self.is_empty() {}
         let mut rng = rand::thread_rng();
         let i: usize = rng.gen_range(0..self.len());
@@ -75,19 +75,19 @@ fn join_vector(vec: Vec<char>, sep: String) -> String {
 /// Displays stick man with n parts shown
 fn get_stickman(parts: usize) -> &'static str {
     match parts {
-        0 => return "\n    |-------|\n    |       |\n    |\n    |\n    |\n    |\n    |________________",
-        1 => return "\n    |-------|\n    |       |\n    |       O\n    |\n    |\n    |\n    |________________",
-        2 => return "\n    |-------|\n    |       |\n    |       O\n    |       |\n    |\n    |\n    |________________",
-        3 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\n    |\n    |\n    |________________",
-        4 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |\n    |\n    |________________",
-        5 => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      /\n    |\n    |________________",
-        _ => return "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      / \\\n    |\n    |________________",
+        0 => "\n    |-------|\n    |       |\n    |\n    |\n    |\n    |\n    |________________",
+        1 => "\n    |-------|\n    |       |\n    |       O\n    |\n    |\n    |\n    |________________",
+        2 => "\n    |-------|\n    |       |\n    |       O\n    |       |\n    |\n    |\n    |________________",
+        3 => "\n    |-------|\n    |       |\n    |       O\n    |      /|\n    |\n    |\n    |________________",
+        4 => "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |\n    |\n    |________________",
+        5 => "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      /\n    |\n    |________________",
+        _ => "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      / \\\n    |\n    |________________",
     }
 }
 
 /// Returns `hidden_word` with all letters not in `known_letters` replaced with _
 /// and a bool that is true if you won
-fn censor_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (String, bool) {
+fn censor_hidden_word(hidden_word: &str, known_letters: &[char]) -> (String, bool) {
     let mut censored_string_vec: Vec<char> = Vec::new();
     let mut missing_count: u8 = 0;
     for c in hidden_word.chars() {
@@ -105,7 +105,7 @@ fn censor_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (Strin
 /// Runs the entire game with `words_list`
 fn play(mut words_list: Vec<String>) {
     // checks if any words are left
-    if words_list.len() == 0 {
+    if words_list.is_empty() {
         println!("\nYou win!\nThere are no more words left.");
         input();
         return;
@@ -114,7 +114,6 @@ fn play(mut words_list: Vec<String>) {
     let hidden_word: String = words_list.random_choice();
     let mut known_letters: Vec<char> = Vec::new();
     let mut incorrect_guesses: Vec<String> = Vec::new();
-    let mut incorrect_total: u8 = 0;
     let mut error: String = String::new();
     loop {
         // clears terminal before each rewrite
@@ -135,7 +134,7 @@ fn play(mut words_list: Vec<String>) {
             return;
         }
         // shows all incorrect guesses if any exist
-        if incorrect_guesses.len() > 0 {
+        if !incorrect_guesses.is_empty() {
             let wrong_guesses: String = incorrect_guesses.join(", ");
             println!("\nIncorrect Guesses: {wrong_guesses}");
         }
@@ -146,7 +145,7 @@ fn play(mut words_list: Vec<String>) {
             return;
         } else {
             // show errors if they exist then resets error
-            if error.len() > 0 {
+            if !error.is_empty() {
                 println!("{error}");
             }
             error = "".to_string();
@@ -164,7 +163,7 @@ fn play(mut words_list: Vec<String>) {
                 } else if hidden_word.to_lowercase().contains(&guess) {
                     known_letters.push(guess_char);
                 // blank response causes a new prompt for a guess again
-                } else if guess == "" {
+                } else if guess.is_empty() {
                     error = "\nPlease type in a valid guess.".to_string();
                 // adds incorrect guess to incorrect_guesses and increments total wrong answers
                 } else {
@@ -212,8 +211,11 @@ mod hangman_tests {
         let mut words_list = vec!["Rust".to_string(), "Linux".to_string()];
         for _ in 0..2 {
             let word = words_list.random_choice();
+            // confirms word is no longer in words_list
+            assert!(!words_list.contains(&word));
+            // confirms
             let result = perm_words_list.contains(&word);
-            assert_eq!(result, true);
+            assert!(result);
         }
     }
 
@@ -221,28 +223,30 @@ mod hangman_tests {
     fn random_choice_empties_vector() {
         let mut words_list = vec!["Rust".to_string(), "Linux".to_string()];
         for _ in 0..2 {
-            words_list.random_choice();
+            let word = words_list.random_choice();
+            // confirms word is no longer in words_list
+            assert!(!words_list.contains(&word));
         }
-        assert_eq!(words_list.len(), 0);
+        assert!(words_list.is_empty());
     }
 
     #[test]
     fn censor_hidden_word_no_win() {
         let known_letters: Vec<char> = vec!['t', 'e'];
-        let (string, win) = censor_hidden_word(&"Test this".to_string(), &known_letters);
+        let (string, win) = censor_hidden_word("Test this", &known_letters);
         // tests string
         assert_eq!(string, "T e _ t   t _ _ _".to_string());
         // tests win
-        assert_eq!(win, false);
+        assert!(!win);
     }
 
     #[test]
     fn censor_hidden_word_win() {
         let known_letters: Vec<char> = vec!['t', 'e', 's'];
-        let (string, win) = censor_hidden_word(&"Test".to_string(), &known_letters);
+        let (string, win) = censor_hidden_word("Test", &known_letters);
         // tests string
         assert_eq!(string, "T e s t".to_string());
         // tests win
-        assert_eq!(win, true);
+        assert!(win);
     }
 }
