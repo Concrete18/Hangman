@@ -12,7 +12,7 @@ fn load_words(FILE_PATH: &str) -> Vec<String> {
         words_list = fs::read_to_string(FILE_PATH)
             .expect(msg)
             .lines()
-            .map(|s: &str| s.to_string())
+            .map(|s: &str| s.trim().to_string())
             .collect();
     } else {
         words_list = vec![
@@ -73,7 +73,7 @@ fn join_vector(vec: Vec<char>, sep: String) -> String {
 }
 
 /// Displays stick man with n parts shown
-fn get_stickman(parts: u8) -> &'static str {
+fn get_stickman(parts: usize) -> &'static str {
     match parts {
         0 => return "\n    |-------|\n    |       |\n    |\n    |\n    |\n    |\n    |________________",
         1 => return "\n    |-------|\n    |       |\n    |       O\n    |\n    |\n    |\n    |________________",
@@ -85,7 +85,8 @@ fn get_stickman(parts: u8) -> &'static str {
     }
 }
 
-/// Prints `hidden_word` with all letters not in `known_letters` replaced with _
+/// Returns `hidden_word` with all letters not in `known_letters` replaced with _
+/// and a bool that is true if you won
 fn censor_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (String, bool) {
     let mut censored_string_vec: Vec<char> = Vec::new();
     let mut missing_count: u8 = 0;
@@ -101,7 +102,7 @@ fn censor_hidden_word(hidden_word: &String, known_letters: &Vec<char>) -> (Strin
     (censored_word, missing_count == 0)
 }
 
-/// TODO ph
+/// Runs the entire game with `words_list`
 fn play(mut words_list: Vec<String>) {
     // checks if any words are left
     if words_list.len() == 0 {
@@ -113,7 +114,7 @@ fn play(mut words_list: Vec<String>) {
     let hidden_word: String = words_list.random_choice();
     let mut known_letters: Vec<char> = Vec::new();
     let mut incorrect_guesses: Vec<String> = Vec::new();
-    let mut losses: u8 = 0;
+    let mut incorrect_total: u8 = 0;
     let mut error: String = String::new();
     loop {
         // clears terminal before each rewrite
@@ -122,10 +123,10 @@ fn play(mut words_list: Vec<String>) {
         println!("Welcome to the game of Hangman\n");
         // censores hidden word
         let (censored_word, win) = censor_hidden_word(&hidden_word, &known_letters);
-        // TODO figure out how to center below
         println!("    {censored_word}");
+        let incorrect_total = incorrect_guesses.len();
         // prints stickman
-        let stickman = get_stickman(losses);
+        let stickman = get_stickman(incorrect_total);
         println!("{stickman}");
         // checks if user has won
         if win {
@@ -139,52 +140,43 @@ fn play(mut words_list: Vec<String>) {
             println!("\nIncorrect Guesses: {wrong_guesses}");
         }
         // checks for loss
-        if losses >= 6 {
+        if incorrect_total >= 6 {
             println!("\nYou lose!\nIt was {hidden_word}");
             play_again(words_list);
             return;
         } else {
-            // show errors if they exist
+            // show errors if they exist then resets error
             if error.len() > 0 {
                 println!("{error}");
             }
-            // reset error
             error = "".to_string();
             // gets guess
             println!("\nType a letter or a full guess:");
             let guess: String = input().to_lowercase();
+            if incorrect_guesses.contains(&guess) {
+                error = format!("\nYou already guessed '{guess}' incorrectly.").to_string();
             // letter guess
-            if guess.len() == 1 {
+            } else if guess.len() == 1 {
                 let guess_char: char = guess.chars().next().expect("string is empty");
                 // guessed letter was already chosen
                 if known_letters.contains(&guess_char) {
                     error = "\nYou already guessed that correctly.".to_string();
-                }
-                // guessed letter or word was already used incorrectly
-                else if incorrect_guesses.contains(&guess) {
-                    error = format!("\nYou already guessed '{guess}' incorrectly.").to_string();
-                    // guessed letter is in the current word
                 } else if hidden_word.to_lowercase().contains(&guess) {
                     known_letters.push(guess_char);
                 // blank response causes a new prompt for a guess again
                 } else if guess == "" {
                     error = "\nPlease type in a valid guess.".to_string();
-                // TODO write comment
+                // adds incorrect guess to incorrect_guesses and increments total wrong answers
                 } else {
                     incorrect_guesses.push(guess.trim().to_string());
-                    losses += 1;
                 }
             // full guess
             } else if guess == hidden_word.to_lowercase() {
                 println!("\nYou win!");
                 play_again(words_list);
                 return;
-            // TODO fix duplicate
-            } else if incorrect_guesses.contains(&guess) {
-                error = format!("\nYou already guessed '{guess}' incorrectly.").to_string();
             } else {
                 incorrect_guesses.push(guess.trim().to_string());
-                losses += 1;
             }
         }
     }
@@ -235,7 +227,7 @@ mod hangman_tests {
     }
 
     #[test]
-    fn hidden_word_printing_no_win() {
+    fn censor_hidden_word_no_win() {
         let known_letters: Vec<char> = vec!['t', 'e'];
         let (string, win) = censor_hidden_word(&"Test this".to_string(), &known_letters);
         // tests string
@@ -245,7 +237,7 @@ mod hangman_tests {
     }
 
     #[test]
-    fn hidden_word_printing_win() {
+    fn censor_hidden_word_win() {
         let known_letters: Vec<char> = vec!['t', 'e', 's'];
         let (string, win) = censor_hidden_word(&"Test".to_string(), &known_letters);
         // tests string
