@@ -2,19 +2,28 @@ use clearscreen::ClearScreen;
 use rand::Rng;
 use std::{fs, io, path};
 
+fn read_file(file_path: &path::Path) -> Vec<String> {
+    let msg: &str = "Should have been able to read this file";
+    fs::read_to_string(file_path)
+        .expect(msg)
+        .lines()
+        .map(|s: &str| s.trim().to_string())
+        .collect()
+}
+
 /// returns a word list from a file named words_list.txt in the same directory
 /// or from a hardcoded backup list
-fn load_words(file_path: &str) -> Vec<String> {
-    // checks if file exists then loads words from it
-    let words_list: Vec<String> = if path::Path::new(file_path).exists() {
-        let msg: &str = "Should have been able to read this file";
-        fs::read_to_string(file_path)
-            .expect(msg)
-            .lines()
-            .map(|s: &str| s.trim().to_string())
-            .collect()
+fn load_words() -> Vec<String> {
+    let shared_words_list = path::Path::new("../words_list.txt");
+    let local_words_list = path::Path::new("words_list.txt");
+    // TODO fill comment
+    let words_list: Vec<String> = if shared_words_list.exists() {
+        read_file(shared_words_list)
+    // TODO fill comment
+    } else if local_words_list.exists() {
+        read_file(local_words_list)
+    // backup vector in case text file is not found in local or shared paths
     } else {
-        // backup vector in case text file is not found
         vec![
             "Array".to_string(),
             "Binary".to_string(),
@@ -182,8 +191,7 @@ fn play(mut words_list: Vec<String>) {
 }
 
 fn main() {
-    const FILE_PATH: &str = "words_list.txt";
-    let words_list: Vec<String> = load_words(FILE_PATH);
+    let words_list: Vec<String> = load_words();
     play(words_list);
 }
 
@@ -192,17 +200,17 @@ mod hangman_tests {
     use super::*;
 
     #[test]
-    fn load_words_from_file() {
-        const FILE_PATH: &str = "words_list.txt";
-        let words_list = load_words(FILE_PATH);
-        assert!(words_list.len() > 10);
+    fn read_file_works() {
+        let words_list_path = path::Path::new("../words_list.txt");
+        let words_list: Vec<String> = read_file(words_list_path);
+        assert!(words_list.contains(&"Rust".to_string()));
+        assert!(!words_list.is_empty());
     }
 
     #[test]
-    fn load_words_from_backup() {
-        const FILE_PATH: &str = "wrong_list.txt";
-        let words_list = load_words(FILE_PATH);
-        assert!(words_list.len() <= 10);
+    fn load_words_works() {
+        let words_list = load_words();
+        assert!(words_list.len() > 10);
     }
 
     #[test]
@@ -231,7 +239,7 @@ mod hangman_tests {
     }
 
     #[test]
-    fn censor_hidden_word_no_win() {
+    fn censor_hidden_word_no_win_yet() {
         let known_letters: Vec<char> = vec!['t', 'e'];
         let (string, win) = censor_hidden_word("Test this", &known_letters);
         // tests string
