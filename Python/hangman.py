@@ -1,4 +1,4 @@
-import random, os, time, json
+import random, os, time
 
 
 def keyboard_interrupt(func):
@@ -50,8 +50,8 @@ class Hangman:
         """
         Loads the words list from a json.
         """
-        with open("words_list.json") as file:
-            self.words_list = json.load(file)
+        with open("../words_list.txt") as f:
+            self.words_list = f.read().splitlines()
 
     def display_stick_man_2(self, parts=0):
         """
