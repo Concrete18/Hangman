@@ -2,7 +2,8 @@ use clearscreen::ClearScreen;
 use rand::Rng;
 use std::{fs, io, path};
 
-fn read_file(file_path: &path::Path) -> Vec<String> {
+/// Returns a vector of strings by line from the file at `file_path`
+fn file_to_vector(file_path: &path::Path) -> Vec<String> {
     let msg: &str = "Should have been able to read this file";
     fs::read_to_string(file_path)
         .expect(msg)
@@ -16,14 +17,14 @@ fn read_file(file_path: &path::Path) -> Vec<String> {
 fn load_words() -> Vec<String> {
     let shared_words_list = path::Path::new("../words_list.txt");
     let local_words_list = path::Path::new("words_list.txt");
-    // TODO fill comment
     let words_list: Vec<String> = if shared_words_list.exists() {
-        read_file(shared_words_list)
-    // TODO fill comment
+        // loads shared repo words list
+        file_to_vector(shared_words_list)
     } else if local_words_list.exists() {
-        read_file(local_words_list)
-    // backup vector in case text file is not found in local or shared paths
+        // loads local words list in same folder
+        file_to_vector(local_words_list)
     } else {
+        // loads backup words list in case text file is not found in local or shared paths
         vec![
             "Array".to_string(),
             "Binary".to_string(),
@@ -119,7 +120,7 @@ fn play(mut words_list: Vec<String>) {
         input();
         return;
     }
-    // runs main play code
+    // runs main gameplay code
     let hidden_word: String = words_list.random_choice();
     let mut known_letters: Vec<char> = Vec::new();
     let mut incorrect_guesses: Vec<String> = Vec::new();
@@ -149,7 +150,7 @@ fn play(mut words_list: Vec<String>) {
         }
         // checks for loss
         if incorrect_total >= 6 {
-            println!("\nYou lose!\nIt was {hidden_word}");
+            println!("\nYou lose!\nThe Word was {hidden_word}");
             play_again(words_list);
             return;
         } else {
@@ -200,9 +201,9 @@ mod hangman_tests {
     use super::*;
 
     #[test]
-    fn read_file_works() {
+    fn file_to_vector_works() {
         let words_list_path = path::Path::new("../words_list.txt");
-        let words_list: Vec<String> = read_file(words_list_path);
+        let words_list: Vec<String> = file_to_vector(words_list_path);
         assert!(words_list.contains(&"Rust".to_string()));
         assert!(!words_list.is_empty());
     }
