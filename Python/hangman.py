@@ -3,17 +3,13 @@ import random, os, time
 
 def keyboard_interrupt(func):
     """
-    Catches all KeyboardInterrupt exceptions.
-    Closes with a message and delayed program exit.
+    Catches any KeyboardInterrupt exceptions and exit.
     """
 
     def wrapped(*args, **kwargs):
         try:
             func(*args, **kwargs)
         except KeyboardInterrupt:
-            delay = 0.1
-            print(f"\nClosing in {delay} second(s)")
-            time.sleep(delay)
             exit()
 
     return wrapped
@@ -53,89 +49,89 @@ class Hangman:
         with open("../words_list.txt") as f:
             self.words_list = f.read().splitlines()
 
-    def display_stick_man_2(self, parts=0):
+    def get_stickman(self, parts=0):
         """
         Displays stick man with n parts shown.
         """
         p0 = (
-            "\n   |-------|        "
-            "\n   |       |        "
-            "\n   |                "
-            "\n   |                "
-            "\n   |                "
-            "\n   |                "
-            "\n   |________________"
+            "\n    |-------|        "
+            "\n    |       |        "
+            "\n    |                "
+            "\n    |                "
+            "\n    |                "
+            "\n    |                "
+            "\n    |________________"
         )
         p1 = (
-            "\n   |-------|        "
-            "\n   |       |        "
-            "\n   |       O        "
-            "\n   |                "
-            "\n   |                "
-            "\n   |                "
-            "\n   |________________"
+            "\n    |-------|        "
+            "\n    |       |        "
+            "\n    |       O        "
+            "\n    |                "
+            "\n    |                "
+            "\n    |                "
+            "\n    |________________"
         )
         p2 = (
-            "\n   |-------|        "
-            "\n   |       |        "
-            "\n   |       O        "
-            "\n   |       |        "
-            "\n   |                "
-            "\n   |                "
-            "\n   |________________"
+            "\n    |-------|        "
+            "\n    |       |        "
+            "\n    |       O        "
+            "\n    |       |        "
+            "\n    |                "
+            "\n    |                "
+            "\n    |________________"
         )
         p3 = (
-            "\n   |-------|        "
-            "\n   |       |        "
-            "\n   |       O        "
-            "\n   |      /|        "
-            "\n   |                "
-            "\n   |                "
-            "\n   |________________"
+            "\n    |-------|        "
+            "\n    |       |        "
+            "\n    |       O        "
+            "\n    |      /|        "
+            "\n    |                "
+            "\n    |                "
+            "\n    |________________"
         )
         p4 = (
-            "\n   |-------|        "
-            "\n   |       |        "
-            "\n   |       O        "
-            "\n   |      /|\       "
-            "\n   |                "
-            "\n   |                "
-            "\n   |________________"
+            "\n    |-------|        "
+            "\n    |       |        "
+            "\n    |       O        "
+            "\n    |      /|\       "
+            "\n    |                "
+            "\n    |                "
+            "\n    |________________"
         )
         p5 = (
-            "\n   |-------|        "
-            "\n   |       |        "
-            "\n   |       O        "
-            "\n   |      /|\       "
-            "\n   |      /         "
-            "\n   |                "
-            "\n   |________________"
+            "\n    |-------|        "
+            "\n    |       |        "
+            "\n    |       O        "
+            "\n    |      /|\       "
+            "\n    |      /         "
+            "\n    |                "
+            "\n    |________________"
         )
         p6 = (
-            "\n   |-------|        "
-            "\n   |       |        "
-            "\n   |       O        "
-            "\n   |      /|\       "
-            "\n   |      / \       "
-            "\n   |                "
-            "\n   |________________"
+            "\n    |-------|        "
+            "\n    |       |        "
+            "\n    |       O        "
+            "\n    |      /|\       "
+            "\n    |      / \       "
+            "\n    |                "
+            "\n    |________________"
         )
         if parts == 0:
-            print(p0)
+            return p0
         elif parts == 1:
-            print(p1)
+            return p1
         elif parts == 2:
-            print(p2)
+            return p2
         elif parts == 3:
-            print(p3)
+            return p3
         elif parts == 4:
-            print(p4)
+            return p4
         elif parts == 5:
-            print(p5)
+            return p5
         else:
-            print(p6)
+            return p6
 
-    def print_hidden_word(self, word, known_letters: list, left_padding=4):
+    def censor_hidden_word(self, word, known_letters: list):
         """
         Prints out the hidden word with only known letters shown.
         """
@@ -147,9 +143,8 @@ class Hangman:
             else:
                 final_string_list.append("_")
                 missing_count += 1
-        final_string = " ".join(final_string_list)
-        print(" " * left_padding, final_string)
-        return not missing_count
+        censored_word = " ".join(final_string_list)
+        return censored_word, missing_count == 0
 
     def play_again(self):
         """
@@ -194,10 +189,6 @@ class Hangman:
         self.incorrect_guess.append(guess)
         self.losses += 1
         print("\nIncorrect")
-        self.display_stick_man_2(self.losses)
-        if self.losses == 6:
-            print("\nYou lose!")
-            self.play_again()
 
     @keyboard_interrupt
     def play(self):
@@ -210,19 +201,24 @@ class Hangman:
         self.incorrect_guess = []
         self.error = None
         self.losses = 0
-
         # picks current word
         words_left = self.get_new_word()
         while self.losses < 6 and words_left:
             os.system("cls" if os.name == "nt" else "clear")
             print("Welcome to the game of Hangman\n")
-            win = self.print_hidden_word(
+            censored_word, win = self.censor_hidden_word(
                 self.current_word,
                 self.known_letters,
             )
-            self.display_stick_man_2(self.losses)
+            incorrect_total = len(self.incorrect_guess)
+            print(f"    {censored_word}")
+            stick_man = self.get_stickman(incorrect_total)
+            print(stick_man)
             if win:
                 print("\nYou win!")
+                self.play_again()
+            elif incorrect_total >= 6:
+                print(f"\nYou lose!\nThe Word was {censored_word}")
                 self.play_again()
             # show incorrect guesses
             if self.incorrect_guess:

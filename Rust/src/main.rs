@@ -112,6 +112,8 @@ fn censor_hidden_word(hidden_word: &str, known_letters: &[char]) -> (String, boo
     (censored_word, missing_count == 0)
 }
 
+fn check_guess(guess: String) {}
+
 /// Runs the entire game with `words_list`
 fn play(mut words_list: Vec<String>) {
     // checks if any words are left
@@ -137,7 +139,7 @@ fn play(mut words_list: Vec<String>) {
         // prints stickman
         let stickman = get_stickman(incorrect_total);
         println!("{stickman}");
-        // checks if user has won
+        // checks if user has won with exact match
         if win {
             println!("\nYou Win!");
             play_again(words_list);
@@ -162,6 +164,7 @@ fn play(mut words_list: Vec<String>) {
             // gets guess
             println!("\nType a letter or a full guess:");
             let guess: String = input().to_lowercase();
+
             if incorrect_guesses.contains(&guess) {
                 error = format!("\nYou already guessed '{guess}' incorrectly.").to_string();
             // letter guess
