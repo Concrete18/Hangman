@@ -161,23 +161,23 @@ fn play(mut words_list: Vec<String>) {
 
             if incorrect_guesses.contains(&guess) {
                 error = format!("\nYou already guessed '{guess}' incorrectly.").to_string();
+            } else if guess.is_empty() {
+                // blank response causes a new prompt for a guess again
+                error = "\nPlease type in a valid guess.".to_string();
             // letter guess
             } else if guess.len() == 1 {
                 let guess_char: char = guess.chars().next().expect("string is empty");
-                // guessed letter was already chosen
                 if known_letters.contains(&guess_char) {
+                    // guessed letter was already chosen
                     error = "\nYou already guessed that correctly.".to_string();
                 } else if hidden_word.to_lowercase().contains(&guess) {
                     known_letters.push(guess_char);
-                // blank response causes a new prompt for a guess again
-                } else if guess.is_empty() {
-                    error = "\nPlease type in a valid guess.".to_string();
-                // adds incorrect guess to incorrect_guesses and increments total wrong answers
                 } else {
+                    // adds incorrect guess to incorrect_guesses and increments total wrong answers
                     incorrect_guesses.push(guess.trim().to_string());
                 }
-            // full guess
             } else if guess == hidden_word.to_lowercase() {
+                // full guess
                 println!("\nYou win!");
                 play_again(words_list);
                 return;
@@ -199,7 +199,7 @@ mod hangman_tests {
 
     #[test]
     fn file_to_vector_works() {
-        let words_list_path = path::Path::new("../words_list.txt");
+        let words_list_path = path::Path::new("words_list.txt");
         let words_list: Vec<String> = file_to_vector(words_list_path);
         assert!(words_list.contains(&"Rust".to_string()));
         assert!(!words_list.is_empty());
