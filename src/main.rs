@@ -15,12 +15,8 @@ fn file_to_vector(file_path: &path::Path) -> Vec<String> {
 /// returns a word list from a file named words_list.txt in the same directory
 /// or from a hardcoded backup list
 fn load_words() -> Vec<String> {
-    let shared_words_list = path::Path::new("../words_list.txt");
     let local_words_list = path::Path::new("words_list.txt");
-    let words_list: Vec<String> = if shared_words_list.exists() {
-        // loads shared repo words list
-        file_to_vector(shared_words_list)
-    } else if local_words_list.exists() {
+    let words_list: Vec<String> = if local_words_list.exists() {
         // loads local words list in same folder
         file_to_vector(local_words_list)
     } else {
@@ -111,8 +107,6 @@ fn censor_hidden_word(hidden_word: &str, known_letters: &[char]) -> (String, boo
     let censored_word: String = join_vector(censored_string_vec, " ".to_string());
     (censored_word, missing_count == 0)
 }
-
-fn check_guess(guess: String) {}
 
 /// Runs the entire game with `words_list`
 fn play(mut words_list: Vec<String>) {
