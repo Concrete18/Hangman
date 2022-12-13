@@ -12,8 +12,7 @@ fn file_to_vector(file_path: &path::Path) -> Vec<String> {
         .collect()
 }
 
-/// returns a word list from a file named words_list.txt in the same directory
-/// or from a hardcoded backup list
+/// returns a word list from a file named words_list.txt in the same directory or from a hardcoded backup list
 fn load_words() -> Vec<String> {
     let local_words_list = path::Path::new("words_list.txt");
     let words_list: Vec<String> = if local_words_list.exists() {
@@ -49,7 +48,7 @@ fn play_again(words_list: Vec<String>) {
     println!("\nDo you want to play again?");
     let response: String = input().to_lowercase();
     if response == "yes" || response == "y" {
-        play(words_list)
+        start_game(words_list)
     } else {
         println!("\nThanks for playing!");
     }
@@ -61,7 +60,6 @@ trait RandomChoice<T> {
 
 impl<T> RandomChoice<T> for Vec<T> {
     fn random_choice(&mut self) -> T {
-        if self.is_empty() {}
         let mut rng = rand::thread_rng();
         let i: usize = rng.gen_range(0..self.len());
         self.swap_remove(i)
@@ -108,7 +106,7 @@ fn censor_hidden_word(hidden_word: &str, known_letters: &[char]) -> (String, boo
 }
 
 /// Runs the entire game with `words_list`
-fn play(mut words_list: Vec<String>) {
+fn start_game(mut words_list: Vec<String>) {
     // checks if any words are left
     if words_list.is_empty() {
         println!("\nYou win!\nThere are no more words left.");
@@ -189,7 +187,7 @@ fn play(mut words_list: Vec<String>) {
 
 fn main() {
     let words_list: Vec<String> = load_words();
-    play(words_list);
+    start_game(words_list);
 }
 
 #[cfg(test)]
