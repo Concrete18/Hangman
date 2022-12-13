@@ -47,8 +47,7 @@ fn input() -> String {
 /// Asks if you want to play again
 fn play_again(words_list: Vec<String>) {
     println!("\nDo you want to play again?");
-    let mut response: String = input();
-    response = response.to_lowercase();
+    let response: String = input().to_lowercase();
     if response == "yes" || response == "y" {
         play(words_list)
     } else {
