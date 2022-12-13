@@ -2,7 +2,7 @@ use clearscreen::ClearScreen;
 use rand::Rng;
 use std::{fs, io, path};
 
-/// Returns a vector of strings by line from the file at `file_path`
+/// Returns a vector of strings by line from the file at `file_path`.
 fn file_to_vector(file_path: &path::Path) -> Vec<String> {
     let msg: &str = "Should have been able to read this file";
     fs::read_to_string(file_path)
@@ -12,7 +12,7 @@ fn file_to_vector(file_path: &path::Path) -> Vec<String> {
         .collect()
 }
 
-/// returns a word list from a file named words_list.txt in the same directory or from a hardcoded backup list
+/// Returns a word list from a file named words_list.txt in the same directory or from a hardcoded backup list.
 fn load_words() -> Vec<String> {
     let local_words_list = path::Path::new("words_list.txt");
     let words_list: Vec<String> = if local_words_list.exists() {
@@ -34,7 +34,7 @@ fn load_words() -> Vec<String> {
     words_list
 }
 
-/// asks for input after printing a msg
+/// Asks for input after printing a msg.
 fn input() -> String {
     let mut response: String = String::new();
     io::stdin()
@@ -43,7 +43,7 @@ fn input() -> String {
     return response.trim().to_string();
 }
 
-/// Asks if you want to play again
+/// Asks if you want to play again.
 fn play_again(words_list: Vec<String>) {
     println!("\nDo you want to play again?");
     let response: String = input().to_lowercase();
@@ -75,7 +75,7 @@ fn join_vector(vec: Vec<char>, sep: String) -> String {
         .join(&sep);
 }
 
-/// Displays stick man with n parts shown
+/// Displays stick man with n parts shown.
 fn get_stickman(parts: usize) -> &'static str {
     match parts {
         0 => "\n    |-------|\n    |       |\n    |\n    |\n    |\n    |\n    |________________",
@@ -89,7 +89,7 @@ fn get_stickman(parts: usize) -> &'static str {
 }
 
 /// Returns `hidden_word` with all letters not in `known_letters` replaced with _
-/// and a bool that is true if you won
+/// and a bool that is true if you won.
 fn censor_hidden_word(hidden_word: &str, known_letters: &[char]) -> (String, bool) {
     let mut censored_string_vec: Vec<char> = Vec::new();
     let mut missing_count: u8 = 0;
@@ -105,7 +105,7 @@ fn censor_hidden_word(hidden_word: &str, known_letters: &[char]) -> (String, boo
     (censored_word, missing_count == 0)
 }
 
-/// Runs the entire game with `words_list`
+/// Starts the game the game using words from `words_list`.
 fn start_game(mut words_list: Vec<String>) {
     // checks if any words are left
     if words_list.is_empty() {
