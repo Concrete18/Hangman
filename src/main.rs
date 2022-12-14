@@ -2,36 +2,16 @@ use clearscreen::ClearScreen;
 use rand::Rng;
 use std::{fs, io, path};
 
-/// Returns a vector of strings by line from the file at `file_path`.
-fn file_to_vector(file_path: &path::Path) -> Vec<String> {
-    let msg: &str = "Should have been able to read this file";
-    fs::read_to_string(file_path)
-        .expect(msg)
+/// Returns a word list from a file named words_list.txt in the same directory or from a hardcoded backup list.
+fn load_words(words_list_path: &path::Path) -> Vec<String> {
+    let backup_words_list =
+        "Array\nBinary\nComputer\nFunction\nFunction\nLinux\nProgramming\nRust\nVariable\nBackup"
+            .to_string();
+    fs::read_to_string(words_list_path)
+        .unwrap_or(backup_words_list)
         .lines()
         .map(|s: &str| s.trim().to_string())
         .collect()
-}
-
-/// Returns a word list from a file named words_list.txt in the same directory or from a hardcoded backup list.
-fn load_words() -> Vec<String> {
-    let local_words_list = path::Path::new("words_list.txt");
-    let words_list: Vec<String> = if local_words_list.exists() {
-        // loads local words list in same folder
-        file_to_vector(local_words_list)
-    } else {
-        // loads backup words list in case text file is not found in local or shared paths
-        vec![
-            "Array".to_string(),
-            "Binary".to_string(),
-            "Computer".to_string(),
-            "Function".to_string(),
-            "Linux".to_string(),
-            "Programming".to_string(),
-            "Rust".to_string(),
-            "Variable".to_string(),
-        ]
-    };
-    words_list
 }
 
 /// Asks for input after printing a msg.
@@ -186,7 +166,8 @@ fn start_game(mut words_list: Vec<String>) {
 }
 
 fn main() {
-    let words_list: Vec<String> = load_words();
+    let words_list_path = path::Path::new("words_list.txt");
+    let words_list: Vec<String> = load_words(words_list_path);
     start_game(words_list);
 }
 
@@ -195,17 +176,20 @@ mod hangman_tests {
     use super::*;
 
     #[test]
-    fn file_to_vector_works() {
+    fn load_words_from_file() {
         let words_list_path = path::Path::new("words_list.txt");
-        let words_list: Vec<String> = file_to_vector(words_list_path);
+        let words_list = load_words(words_list_path);
+        assert!(words_list.len() > 10);
         assert!(words_list.contains(&"Rust".to_string()));
-        assert!(!words_list.is_empty());
+        assert!(!words_list.contains(&"Backup".to_string()));
     }
 
     #[test]
-    fn load_words_works() {
-        let words_list = load_words();
-        assert!(words_list.len() > 10);
+    fn load_words_from_backup() {
+        let words_list_path = path::Path::new("invalid_file.txt");
+        let words_list = load_words(words_list_path);
+        assert!(words_list.contains(&"Backup".to_string()));
+        assert!(!words_list.is_empty());
     }
 
     #[test]
