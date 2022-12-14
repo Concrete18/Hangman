@@ -22,7 +22,7 @@ Declaration
 File
 Front End
 Function
-High-level Language
+High level Language
 Internet
 JavaScript
 Linux
