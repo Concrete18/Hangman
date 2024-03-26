@@ -56,7 +56,7 @@ fn join_vector(vec: Vec<char>, sep: String) -> String {
 
 /// Displays stick man with n parts shown.
 fn get_stickman(parts: usize) -> &'static str {
-    let stickman = match parts {
+    (match parts {
         0 => {
             "
           |-------|
@@ -127,8 +127,7 @@ fn get_stickman(parts: usize) -> &'static str {
           |
           |________________"
         }
-    };
-    stickman
+    }) as _
 }
 
 /// Returns `hidden_word` with all letters not in `known_letters` replaced with _
