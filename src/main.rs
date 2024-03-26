@@ -5,8 +5,7 @@ use std::{fs, io, path};
 /// Returns a word list from a file named words_list.txt in the same directory or from a hardcoded backup list.
 fn load_words(words_list_path: &path::Path) -> Vec<String> {
     let backup_words_list =
-        "Array\nBinary\nComputer\nFunction\nFunction\nLinux\nProgramming\nRust\nVariable\nBackup"
-            .to_string();
+        "Array\nBinary\nComputer\nLinux\nProgramming\nRust\nVariable\nBackup".to_string();
     fs::read_to_string(words_list_path)
         .unwrap_or(backup_words_list)
         .lines()
@@ -57,20 +56,84 @@ fn join_vector(vec: Vec<char>, sep: String) -> String {
 
 /// Displays stick man with n parts shown.
 fn get_stickman(parts: usize) -> &'static str {
-    match parts {
-        0 => "\n    |-------|\n    |       |\n    |\n    |\n    |\n    |\n    |________________",
-        1 => "\n    |-------|\n    |       |\n    |       O\n    |\n    |\n    |\n    |________________",
-        2 => "\n    |-------|\n    |       |\n    |       O\n    |       |\n    |\n    |\n    |________________",
-        3 => "\n    |-------|\n    |       |\n    |       O\n    |      /|\n    |\n    |\n    |________________",
-        4 => "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |\n    |\n    |________________",
-        5 => "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      /\n    |\n    |________________",
-        _ => "\n    |-------|\n    |       |\n    |       O\n    |      /|\\\n    |      / \\\n    |\n    |________________",
-    }
+    let stickman = match parts {
+        0 => {
+            "
+          |-------|
+          |       |
+          |
+          |
+          |
+          |
+          |________________"
+        }
+        1 => {
+            "
+          |-------|
+          |       |
+          |       O
+          |
+          |
+          |
+          |________________"
+        }
+        2 => {
+            "
+          |-------|
+          |       |
+          |       O
+          |       |
+          |
+          |
+          |________________"
+        }
+        3 => {
+            "
+          |-------|
+          |       |
+          |       O
+          |      /|
+          |
+          |
+          |________________"
+        }
+        4 => {
+            "
+          |-------|
+          |       |
+          |       O
+          |      /|\\
+          |
+          |
+          |________________"
+        }
+        5 => {
+            "
+          |-------|
+          |       |
+          |       O
+          |      /|\\
+          |      /
+          |
+          |________________"
+        }
+        _ => {
+            "
+          |-------|
+          |       |
+          |       O
+          |      /|\\
+          |      / \\
+          |
+          |________________"
+        }
+    };
+    stickman
 }
 
 /// Returns `hidden_word` with all letters not in `known_letters` replaced with _
 /// and a bool that is true if you won.
-fn censor_hidden_word(hidden_word: &str, known_letters: &[char]) -> (String, bool) {
+pub fn censor_hidden_word(hidden_word: &str, known_letters: &[char]) -> (String, bool) {
     let mut censored_string_vec: Vec<char> = Vec::new();
     let mut missing_count: u8 = 0;
     for c in hidden_word.chars() {
